@@ -14,46 +14,62 @@ function initGame() {
     const gameIndex = today.getDate() % states.length;
     currentState = states[gameIndex];
 
-    correctGuesses = Array(currentState.name.length).fill('_');
-    incorrectGuesses = 0;
-    gameStatus = '';
+    // Check if there's saved game data in localStorage
+    const savedGame = localStorage.getItem("gameData");
+    if (savedGame) {
+        const gameData = JSON.parse(savedGame);
+        if (gameData.date === today.toDateString()) {
+            correctGuesses = gameData.correctGuesses;
+            incorrectGuesses = gameData.incorrectGuesses;
+            gameStatus = gameData.gameStatus;
+        } else {
+            resetGame();
+        }
+    } else {
+        resetGame();
+    }
 
     // Set the image dynamically based on the current state
     const imageContainer = document.getElementById('image-container');
-    const imagePath = `images/${currentState.name}.png`;  // Image filename based on state name with .png extension
+    const imagePath = `images/${currentState.name}.png`;
     imageContainer.innerHTML = `<img src="${imagePath}" alt="${currentState.name}" style="max-width: 100%; height: auto;">`;
 
     renderGame();
 }
 
+function resetGame() {
+    correctGuesses = Array(currentState.name.length).fill('_');
+    incorrectGuesses = 0;
+    gameStatus = '';
+    saveGame(); // Save new game state
+}
+
 function handleGuess() {
     const guessInput = document.getElementById('guess-input');
-    const guess = guessInput.value.trim().toLowerCase();  // Normalize guess input
-    guessInput.value = '';  // Clear input after submitting
+    const guess = guessInput.value.trim().toLowerCase();
+    guessInput.value = '';
 
     if (guess && guess.length > 0) {
         const stateName = currentState.name.toLowerCase();
         let correctGuess = false;
 
-        // Check if the full guess is correct (no partial matches)
         if (guess === stateName) {
-            correctGuesses = currentState.name.split('');  // Reveal entire state name
+            correctGuesses = currentState.name.split('');
             gameStatus = 'You guessed it right!';
             document.getElementById('reload-btn').style.display = 'block';
             document.getElementById('submit-btn').disabled = true;
+            saveGame();
             renderGame();
             return;
         }
 
-        // Check for correct letters from the guess
         for (let i = 0; i < stateName.length; i++) {
             if (guess.includes(stateName[i])) {
-                correctGuesses[i] = currentState.name[i];  // Update matching letter
+                correctGuesses[i] = currentState.name[i];
                 correctGuess = true;
             }
         }
 
-        // If the guess is incorrect (i.e., it's not an exact match or partial match)
         if (!correctGuess || guess !== stateName) {
             incorrectGuesses++;
             gameStatus = 'Incorrect guess!';
@@ -65,18 +81,31 @@ function handleGuess() {
             }
         }
 
+        saveGame();
         renderGame();
     }
 }
 
+function saveGame() {
+    const gameData = {
+        date: new Date().toDateString(),
+        correctGuesses,
+        incorrectGuesses,
+        gameStatus,
+    };
+    localStorage.setItem("gameData", JSON.stringify(gameData));
+}
+
 function renderGame() {
-    // Update the UI with current game state
     document.getElementById('word-container').innerText = correctGuesses.join(' ');
     document.getElementById('incorrect-guesses').innerText = `Incorrect Guesses: ${incorrectGuesses}/${maxIncorrectGuesses}`;
     document.getElementById('game-status').innerText = gameStatus;
 }
 
 document.getElementById('submit-btn').addEventListener('click', handleGuess);
-document.getElementById('reload-btn').addEventListener('click', initGame);
+document.getElementById('reload-btn').addEventListener('click', () => {
+    localStorage.removeItem("gameData"); // Clear saved game
+    initGame();
+});
 
 window.onload = initGame;
