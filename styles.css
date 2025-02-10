@@ -1,0 +1,68 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f4f4f4;
+}
+
+#game-container {
+    text-align: center;
+    border: 2px solid #ccc;
+    padding: 20px;
+    background-color: white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+#word-container {
+    font-size: 2em;
+    letter-spacing: 0.2em;
+    margin-bottom: 20px;
+}
+
+.input-container {
+    display: flex;
+    justify-content: center; /* Aligns input and button horizontally */
+    gap: 10px; /* Adds space between input and button */
+    margin-bottom: 20px; /* Adds space below input-container */
+}
+
+#guess-input {
+    width: 500px;  /* Make input wider */
+    height: 40px;  /* Set height equal to button */
+    font-size: 2em;
+    text-align: center;
+    padding: 0 10px; /* Padding to make it look balanced */
+}
+
+#submit-btn {
+    height: 44px;  /* Set button height equal to input */
+    font-size: 2em;
+    padding: 0 10px; /* Padding to ensure it has enough width */
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    background-color: #ddd;
+}
+
+#image-container {
+    padding-top: 20px;  /* Add 20px padding from the top */
+    height: 500px;        /* Set the container to be half the size */
+    width: 100%;
+    overflow: hidden;   /* Prevent image overflow if it's too large */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#image-container img {
+    max-width: 100%;  /* Ensure the image is responsive */
+    height: auto;     /* Maintain aspect ratio */
+    max-height: 100%; /* Ensure the image fits within the container */
+}
